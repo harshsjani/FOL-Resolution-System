@@ -1,0 +1,11 @@
+class Consts:
+    IMPLIES = "=>"
+    AND = "&"
+    OR = "|"
+    NOT = "~"
+    IMPLIES_REPL = "& ~"
+    input_file_path = "input.txt"
+    output_fil_path = "output.txt"
+    left_bracket = "("
+    right_bracket = ")"
+    args_sep = ","
