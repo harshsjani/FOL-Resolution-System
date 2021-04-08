@@ -18,4 +18,5 @@ class KB:
 
     def _debug_print_kb(self):
         print("Sentences: {}\nConstants: {}\n Variables: {}".format(
-            self.sentences, self.consts, self.vars))
+            list(map(lambda x: x.raw_sentence, self.sentences)),
+            self.consts, self.vars))
