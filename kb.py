@@ -1,4 +1,5 @@
 from sentence import Sentence
+from logic import Logic
 
 
 class KB:
@@ -13,8 +14,8 @@ class KB:
         self.vars |= sentence.get_vars()
         self.consts |= sentence.get_consts()
 
-    def ask(self, query):
-        raise NotImplementedError("Ask method in KB not yet implemented!")
+    def ask(self, KB, query):
+        return Logic.resolution(KB, query)
 
     def _debug_print_kb(self):
         print("Sentences: {}\nConstants: {}\n Variables: {}".format(

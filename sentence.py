@@ -5,21 +5,25 @@ from predicate import Predicate
 class Sentence:
     # Quite literally a bunch of predicates joined together by ORs
     def __init__(self, sentence):
-        self.predicate_names = set()
+        self.predicate_name_map = dict()
         self.ordered_predicates = []
         self.vars = set()
         self.ordered_vars = []
         self.consts = set()
         self.ordered_consts = []
-        self.raw_sentence = sentence
-        self.__parse_sentence__()
 
-    def __parse_sentence__(self):
+        if isinstance(sentence, str):
+            self.raw_sentence = sentence
+            self.__parse_str_sentence__()
+        else:
+            self.__parse_pred_list__(sentence)
+
+    def __parse_str_sentence__(self):
         sentence = self.raw_sentence
 
-        if Consts.AND not in sentence:
+        if Consts.AND not in sentence and Consts.OR not in sentence:
             pred = Predicate(sentence)
-            self.predicate_names.add(pred.name)
+            self.predicate_name_map[pred.name] = pred
             self.vars |= pred.get_vars()
             self.consts |= pred.get_consts()
         else:
@@ -27,13 +31,24 @@ class Sentence:
             # ~Vaccinated(x) v ~Person(x) v ~ Safe(x)
             sentence = sentence.replace(Consts.IMPLIES, Consts.IMPLIES_REPL)
 
-            for predicate in sentence.split(Consts.AND):
+            splitter = Consts.AND if Consts.AND in sentence else Consts.OR
+
+            for predicate in sentence.split(splitter):
                 # ~Vaccinated(x)
+                if splitter == Consts.AND:
+                    predicate = Consts.NOT + predicate
                 pred = Predicate(predicate)
-                self.predicate_names.add(pred.name)
+                self.predicate_name_map[pred.name] = pred
                 self.ordered_predicates.append(pred)
                 self.vars |= pred.get_vars()
                 self.consts |= pred.get_consts()
+
+    def __parse_pred_list__(self, pred_list):
+        for pred in pred_list:
+            self.predicate_name_map[pred.name] = pred
+            self.ordered_predicates.append(pred)
+            self.vars |= pred.get_vars()
+            self.consts |= pred.get_consts()
 
     def get_vars(self):
         return self.vars
