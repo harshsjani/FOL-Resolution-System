@@ -21,9 +21,10 @@ class Sentence:
     def __parse_str_sentence__(self):
         sentence = self.raw_sentence
 
-        if Consts.AND not in sentence and Consts.OR not in sentence:
+        if Consts.AND not in sentence and Consts.OR not in sentence and Consts.IMPLIES not in sentence:
             pred = Predicate(sentence)
             self.predicate_name_map[pred.name] = pred
+            self.ordered_predicates.append(pred)
             self.vars |= pred.get_vars()
             self.consts |= pred.get_consts()
         else:
@@ -49,6 +50,9 @@ class Sentence:
             self.ordered_predicates.append(pred)
             self.vars |= pred.get_vars()
             self.consts |= pred.get_consts()
+
+    def __str__(self):
+        return " | ".join(map(str, self.ordered_predicates))
 
     def get_vars(self):
         return self.vars

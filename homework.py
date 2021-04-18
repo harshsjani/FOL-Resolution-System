@@ -21,10 +21,10 @@ class LogicRunner:
 
     def run_logic(self):
         self.read_input_into_kb()
-        self.kb._debug_print_kb()
+        # self.kb._debug_print_kb()
 
         for query in self.queries:
-            self.kb.ask(query)
+            print(self.kb.ask(self.kb, query))
 
 
 if __name__ == "__main__":

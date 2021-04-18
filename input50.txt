@@ -2,8 +2,8 @@
 Greet(Hayley,TrainerJosh)
 PlayFetch(Luna,TrainerBibek)
 ShowOff(Ares,TrainerChristina)
-Graduate(Hayley
-)Play(Leia,Teddy)
+Graduate(Hayley)
+Play(Leia,Teddy)
 49
 Vaccinated(x) => Start(x)
 Start(x) & Healthy(x) => Ready(x)
