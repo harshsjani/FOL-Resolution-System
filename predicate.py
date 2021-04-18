@@ -12,13 +12,23 @@ class Predicate:
         args = literal[lb_idx + 1: rb_idx].split(Consts.args_sep)
 
         self.consts = set()
+        self.ordered_consts = []
         self.vars = set()
+        self.ordered_vars = []
 
         for arg in args:
             if arg.istitle():
                 self.consts.add(arg)
+                self.ordered_consts.append(arg)
             else:
                 self.vars.add(arg)
+                self.ordered_vars.append(arg)
+
+    # def __eq__(self, other):
+    #     return self.name == other.name and self.negated == other.negated
+
+    # def __hash__(self):
+
 
     def get_consts(self):
         return self.consts

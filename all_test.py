@@ -1,21 +1,15 @@
-import unittest
-from kb import KB
 import sentence
 
 
-class LogicTest(unittest.TestCase):
-    def __init__(self):
-        self.kb = KB()
-
-    def testSentence(self):
-        expr1 = "Start(x) & Healthy(x) => Ready(x)"
-        sentence1 = sentence.Sentence(expr1)
-        print(sentence1.predicates)
-
-    def testMultiply(self):
-        self.assertEqual((0 * 10), 0)
-        self.assertEqual((5 * 8), 40)
+def test_one():
+    print("5")
 
 
-if __name__ == '__main__':
-    unittest.main()
+def testSentence():
+    expr1 = "Start(x) & Healthy(x) => Ready(x)"
+    _ = sentence.Sentence(expr1)
+
+
+def testMultiply():
+    assert (0 * 10) == 0
+    assert (5 * 8) == 40
