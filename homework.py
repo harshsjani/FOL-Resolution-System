@@ -6,6 +6,7 @@ class LogicRunner:
     def __init__(self):
         self.kb = KB()
         self.queries = []
+        self.answers = []
 
     def read_input_into_kb(self):
         with open(Consts.input_file_path) as ipf:
@@ -19,12 +20,17 @@ class LogicRunner:
             for i in range(num_sentences):
                 self.kb.tell(ipf.readline().rstrip())
 
+    def write_output(self):
+        with open(Consts.input_file_path) as opf:
+            opf.writelines("\n".join(self.answers))
+
     def run_logic(self):
         self.read_input_into_kb()
-        # self.kb._debug_print_kb()
 
         for query in self.queries:
-            print(self.kb.ask(self.kb, query))
+            self.answers.append(True if self.kb.ask(self.kb, query) else False)
+
+        self.write_output()
 
 
 if __name__ == "__main__":

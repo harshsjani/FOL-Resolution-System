@@ -24,7 +24,7 @@ class TestRunner:
             shutil.copyfile(expected_file, 'input.txt')
             time.sleep(0.3)
             os.system('python homework.py')
-            time.sleep(2)
+            time.sleep(5)
             ifp = open('output.txt', 'r')
             test_run_output = ifp.readlines()
             ifp.close()
