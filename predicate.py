@@ -18,6 +18,7 @@ class Predicate:
         self.ordered_args = []
 
         for arg in args:
+            arg = arg.strip()
             if arg[0].isupper():
                 self.consts.add(arg)
                 self.ordered_consts.append(arg)
@@ -51,12 +52,21 @@ class Predicate:
         return self.ordered_args
 
     def subst(self, subst_list):
-        for var, const in subst_list:
+        if not subst_list:
+            return
+        # None or mapping {x: Dan, y: Bella}
+        # {x: y, z: Shawn}
+        for var, value in subst_list.items():
             if var in self.vars:
                 self.vars.discard(var)
                 idx = self.ordered_args.index(var)
                 self.ordered_vars.remove(var)
-                self.ordered_consts.insert(idx, const)
                 self.ordered_args.remove(var)
-                self.ordered_args.insert(idx, const)
-                self.consts.add(const)
+                self.ordered_args.insert(idx, value)
+
+                if (value[0].isupper()):
+                    self.ordered_consts.insert(idx, value)
+                    self.consts.add(value)
+                else:
+                    self.ordered_vars.insert(idx, value)
+                    self.vars.add(value)

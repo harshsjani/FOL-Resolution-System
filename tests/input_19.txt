@@ -1,0 +1,12 @@
+1
+A(Vansh)
+9
+H(x) & G(x) & F(x) & E(x) & D(x) & C(x) & B(x) => A(x)
+A(x) => B(x)
+B(x) => C(x)
+C(x) => D(x)
+D(x) => E(x)
+E(x) => F(x)
+F(x) => G(x)
+G(x) => H(x)
+H(x) => A(x)

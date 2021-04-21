@@ -21,14 +21,14 @@ class LogicRunner:
                 self.kb.tell(ipf.readline().rstrip())
 
     def write_output(self):
-        with open(Consts.input_file_path) as opf:
+        with open(Consts.output_file_path, "w") as opf:
             opf.writelines("\n".join(self.answers))
 
     def run_logic(self):
         self.read_input_into_kb()
 
         for query in self.queries:
-            self.answers.append(True if self.kb.ask(self.kb, query) else False)
+            self.answers.append("TRUE" if self.kb.ask(self.kb, query) else "FALSE")
 
         self.write_output()
 

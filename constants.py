@@ -5,7 +5,7 @@ class Consts:
     NOT = "~"
     IMPLIES_REPL = "& ~"
     input_file_path = "input.txt"
-    output_fil_path = "output.txt"
+    output_file_path = "output.txt"
     left_bracket = "("
     right_bracket = ")"
     args_sep = ","

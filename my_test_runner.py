@@ -12,6 +12,7 @@ class TestRunner:
         os.system('python homework.py')
         upper_bound = 18
         test_fail = False
+        failed_test_numbers = []
         for i in range(1, upper_bound + 1, 1):
             file_no_str = None
             if i < 10:
@@ -24,7 +25,7 @@ class TestRunner:
             shutil.copyfile(expected_file, 'input.txt')
             time.sleep(0.3)
             os.system('python homework.py')
-            time.sleep(5)
+            time.sleep(1)
             ifp = open('output.txt', 'r')
             test_run_output = ifp.readlines()
             ifp.close()
@@ -38,18 +39,23 @@ class TestRunner:
             if len(test_run_output) != len(expected_run_output):
                 print('Test failed for : tests/input_' + file_no_str + '.txt')
                 test_fail = True
+                failed_test_numbers.append(i)
                 break
             ind = 0
             while ind < len(test_run_output):
                 if test_run_output[ind] != expected_run_output[ind]:
-                    print('Test failed for : tests/input_' + file_no_str + '.txt')
-                    print('Test Output : ', test_run_output)
-                    print('Expected Output : ', test_run_output)
+                    # print('Test failed for : tests/input_' + file_no_str + '.txt', str(ind) + " : " + test_run_output[ind] + ": " + expected_run_output[ind])
+                    # print('Test Output : ', test_run_output)
+                    # print('Expected Output : ', expected_run_output)
                     test_fail = True
+                    failed_test_numbers.append(i)
                     break
                 ind += 1
         if test_fail is False:
-            print("All Tests Passed!")
+            print(" ===All Tests Passed! ===")
+        else:
+            print("Tests which failed:")
+            print(failed_test_numbers)
 
 
 t = TestRunner()
