@@ -44,8 +44,6 @@ class Logic:
         # Sub for pred1
         args1 = pred1.ordered_args
         args2 = pred2.ordered_args
-        subst1 = []
-        subst2 = []
         var_mapping = {}
 
         if len(args1) != len(args2):
@@ -59,15 +57,37 @@ class Logic:
                 return None
 
             if arg1.islower():
-                if arg1 in var_mapping and arg2 != var_mapping[arg1]:
-                    return None
-                var_mapping[arg1] = arg2
-                subst1.append((arg1, arg2))
+                if arg1 in var_mapping:
+                    if arg2[0].isupper() and arg2 != var_mapping[arg1]:
+                        return None
+                    elif arg2[0].islower():
+                        var_mapping[arg2] = var_mapping[arg1]
+                    else:
+                        var_mapping[arg1] = arg2
+                else:
+                    if arg2.islower():
+                        if arg2 in var_mapping:
+                            var_mapping[arg1] = var_mapping[arg2]
+                        else:
+                            var_mapping[arg1] = arg2
+                    else:
+                        var_mapping[arg1] = arg2
             elif arg2.islower():
-                if arg2 in var_mapping and arg1 != var_mapping[arg2]:
-                    return None
-                var_mapping[arg2] = arg1
-                subst2.append((arg2, arg1))
+                if arg2 in var_mapping:
+                    if arg1[0].isupper() and arg1 != var_mapping[arg2]:
+                        return None
+                    elif arg1[0].islower():
+                        var_mapping[arg1] = var_mapping[arg2]
+                    else:
+                        var_mapping[arg2] = arg1
+                else:
+                    if arg1.islower():
+                        if arg1 in var_mapping:
+                            var_mapping[arg2] = var_mapping[arg1]
+                        else:
+                            var_mapping[arg2] = arg1
+                    else:
+                        var_mapping[arg2] = arg1
 
         return var_mapping
 
@@ -103,7 +123,7 @@ class Logic:
                     # {x: y, z: Shawn}
                     if not Logic.can_unify(pred1, pred2):
                         continue
-                    
+
                     substs = Logic.unify_predicates(pred1, pred2)
 
                     new_sent = []
