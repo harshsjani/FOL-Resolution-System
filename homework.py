@@ -1,6 +1,5 @@
 from kb import KB
 from constants import Consts
-import time
 
 
 class LogicRunner:
@@ -28,13 +27,10 @@ class LogicRunner:
     def run_logic(self):
         self.read_input_into_kb()
 
-        start_time = time.time()
         for query in self.queries:
             self.answers.append("TRUE" if self.kb.ask(self.kb, query) else "FALSE")
 
         self.write_output()
-        end_time = time.time()
-        print("Time for exec: ", str(end_time - start_time))
 
 
 if __name__ == "__main__":

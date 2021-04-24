@@ -10,7 +10,7 @@ class TestRunner:
     def runTests(self):
         shutil.copyfile('tests/input_01.txt', 'input.txt')
         os.system('python homework.py')
-        upper_bound = 18
+        upper_bound = 20
         test_fail = False
         failed_test_numbers = []
         for i in range(1, upper_bound + 1, 1):

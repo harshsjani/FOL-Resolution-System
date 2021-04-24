@@ -58,10 +58,16 @@ class Logic:
 
             if arg1.islower():
                 if arg1 in var_mapping:
-                    if arg2[0].isupper() and arg2 != var_mapping[arg1]:
+                    mapped = var_mapping[arg1]
+                    if arg2[0].isupper():
+                        if mapped[0].islower():
+                            if mapped in var_mapping:
+                                pass
+                                #if var_mapping[mapped]
+                             #and arg2 != mapped:
                         return None
                     elif arg2[0].islower():
-                        var_mapping[arg2] = var_mapping[arg1]
+                        var_mapping[arg2] = mapped
                     else:
                         var_mapping[arg1] = arg2
                 else:
@@ -92,21 +98,46 @@ class Logic:
         return var_mapping
 
     @staticmethod
-    def is_contradiction(sentence1, sentence2):
-        pred1 = sentence1.ordered_predicates[0]
-        pred2 = sentence2.ordered_predicates[0]
+    def is_variable(var):
+        return isinstance(var, str) and var[0].islower()
 
-        if len(sentence1.ordered_predicates) != 1:
+    @staticmethod
+    def cyclic_vars(var1, var2, mapping):
+        if var1 == var2:
+            return True
+        elif Logic.is_variable(var2) and var1 in mapping:
+            return Logic.cyclic_vars(var1, mapping[var2], mapping)
+        else:
             return False
-        if len(sentence2.ordered_predicates) != 1:
-            return False
-        if not (pred1.negated ^ pred2.negated):
-            return False
-        if pred1.name != pred2.name:
-            return False
-        if pred1.ordered_args != pred2.ordered_args:
-            return False
-        return True
+
+    @staticmethod
+    def unify_variable(var1, var2, mapping):
+        if var1 in mapping:
+            return Logic.unify2(mapping[var1], var2, mapping)
+        elif var2 in mapping:
+            return Logic.unify2(var1, mapping[var2], mapping)
+        elif Logic.cyclic_vars(var1, var2, mapping):
+            return None
+        else:
+            temp_mapping = mapping.copy()
+            temp_mapping[var1] = var2
+            return temp_mapping
+
+    @staticmethod
+    def unify2(args1, args2, mapping=dict()):
+        if mapping is None:
+            return None
+        elif args1 == args2:
+            return mapping
+        elif Logic.is_variable(args1):
+            return Logic.unify_variable(args1, args2, mapping)
+        elif Logic.is_variable(args2):
+            return Logic.unify_variable(args2, args1, mapping)
+        elif isinstance(args1, list) and isinstance(args2, list) and len(args1) == len(args2):
+            if not args1:
+                return mapping
+            return Logic.unify2(args1[1:], args2[1:], Logic.unify2(args1[0], args2[0], mapping))
+        return None
 
     @staticmethod
     def resolve(sentence1, sentence2):
@@ -121,10 +152,13 @@ class Logic:
                 if pred1.name == pred2.name and (pred1.negated ^ pred2.negated):
                     # None or mapping {x: Dan, y: Bella}
                     # {x: y, z: Shawn}
-                    if not Logic.can_unify(pred1, pred2):
-                        continue
+                    # if not Logic.can_unify(pred1, pred2):
+                    #     continue
 
-                    substs = Logic.unify_predicates(pred1, pred2)
+                    substs = Logic.unify2(pred1.ordered_args, pred2.ordered_args)
+
+                    if substs is None:
+                        continue
 
                     new_sent = []
 
