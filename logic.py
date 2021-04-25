@@ -136,7 +136,8 @@ class Logic:
         elif isinstance(args1, list) and isinstance(args2, list) and len(args1) == len(args2):
             if not args1:
                 return mapping
-            return Logic.unify2(args1[1:], args2[1:], Logic.unify2(args1[0], args2[0], mapping))
+            return Logic.unify2(args1[1:], args2[1:],
+                                Logic.unify2(args1[0], args2[0], mapping))
         return None
 
     @staticmethod
@@ -152,8 +153,6 @@ class Logic:
                 if pred1.name == pred2.name and (pred1.negated ^ pred2.negated):
                     # None or mapping {x: Dan, y: Bella}
                     # {x: y, z: Shawn}
-                    # if not Logic.can_unify(pred1, pred2):
-                    #     continue
 
                     substs = Logic.unify2(pred1.ordered_args, pred2.ordered_args)
 

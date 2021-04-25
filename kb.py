@@ -1,4 +1,3 @@
-from sentence import Sentence
 from logic import Logic
 
 
@@ -9,7 +8,6 @@ class KB:
         self.vars = set()
 
     def tell(self, sentence):
-        sentence = Sentence(sentence)
         self.sentences.append(sentence)
         # self.vars |= sentence.get_vars()
         # self.consts |= sentence.get_consts()
@@ -21,3 +19,9 @@ class KB:
         print("Sentences: {}\nConstants: {}\n Variables: {}".format(
             list(map(lambda x: x.raw_sentence, self.sentences)),
             self.consts, self.vars))
+
+    def eliminate_pure_literals(self):
+        pass
+
+    def factor_sentence(self, sentence):
+        pass

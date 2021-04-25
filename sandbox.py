@@ -8,32 +8,18 @@ def f(x):
 # he1 = Sentence('A(y,Bob)')
 # he2 = Sentence('A(x,x)')
 
-# # print(Logic.unify_predicates(he1.ordered_predicates[0], he2.ordered_predicates[0]))
-# print(Logic.unify2(f(he1), f(he2)))
 
-# he1 = Sentence('A(Bob,y)')
-# he2 = Sentence('A(x,x)')
+he1 = Sentence("FA(y1,y1,x1)")
+he2 = Sentence("~FA(x2,y2,y2)")
+he3 = Sentence("AB(x2,y2,z1)")
 
-# # print(Logic.unify_predicates(he1.ordered_predicates[0], he2.ordered_predicates[0]))
-# print(Logic.unify2(f(he1), f(he2)))
+subs = Logic.unify2(he1.ordered_predicates[0].ordered_args, f(he2))
+print(subs)
 
-# he1 = Sentence('A(x,x)')
-# he2 = Sentence('A(y,Bob)')
+he3.ordered_predicates[0].subst(subs)
+print(str(he3))
 
-# # print(Logic.unify_predicates(he1.ordered_predicates[0], he2.ordered_predicates[0]))
-# print(Logic.unify2(f(he1), f(he2)))
-
-# he1 = Sentence('A(x,x)')
-# he2 = Sentence('A(y,Bob)')
-
-# # print(Logic.unify_predicates(he1.ordered_predicates[0], he2.ordered_predicates[0]))
-# print(Logic.unify2(f(he1), f(he2)))
-
-# he1 = Sentence('A(Chad,x,x)')
-# he2 = Sentence('A(y,y,Bob)')
-
-# # print(Logic.unify_predicates(he1.ordered_predicates[0], he2.ordered_predicates[0]))
-# print(Logic.unify2(f(he1), f(he2)))
-
-he1 = Sentence("FA(x,y,y)")
-he1.ordered_predicates[0].subst({"x": "Random", "y": "Sub"})
+he4 = Sentence("A(x,y)")
+subs2 = {"y": "Bob", "x": "y"}
+he4.ordered_predicates[0].subst(subs2)
+print(str(he4))

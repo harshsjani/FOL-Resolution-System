@@ -21,7 +21,8 @@ class Sentence:
     def __parse_str_sentence__(self):
         sentence = self.raw_sentence
 
-        if Consts.AND not in sentence and Consts.OR not in sentence and Consts.IMPLIES not in sentence:
+        if Consts.AND not in sentence and Consts.OR not in sentence and \
+                Consts.IMPLIES not in sentence:
             pred = Predicate(sentence)
             self.predicate_name_map[pred.name] = pred
             self.ordered_predicates.append(pred)
