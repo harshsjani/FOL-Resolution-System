@@ -1,4 +1,5 @@
 from constants import Consts
+from collections import defaultdict
 
 
 class Predicate:
@@ -11,19 +12,19 @@ class Predicate:
         self.name = literal[:lb_idx]
         args = literal[lb_idx + 1: rb_idx].split(Consts.args_sep)
 
-        self.consts = set()
+        self.consts = defaultdict(int)
         self.ordered_consts = []
-        self.vars = set()
+        self.vars = defaultdict(int)
         self.ordered_vars = []
         self.ordered_args = []
 
         for arg in args:
             arg = arg.strip()
             if arg[0].isupper():
-                self.consts.add(arg)
+                self.consts[arg] += 1
                 self.ordered_consts.append(arg)
             else:
-                self.vars.add(arg)
+                self.vars[arg] += 1
                 self.ordered_vars.append(arg)
             self.ordered_args.append(arg)
 
@@ -57,8 +58,8 @@ class Predicate:
         # None or mapping {x: Dan, y: Bella}
         # {x: y, z: Shawn}
         for var, value in subst_list.items():
-            if var in self.vars:
-                self.vars.discard(var)
+            while self.vars[var] > 0:
+                self.vars[var] -= 1
                 idx = self.ordered_args.index(var)
                 self.ordered_vars.remove(var)
                 self.ordered_args.remove(var)
@@ -66,7 +67,7 @@ class Predicate:
 
                 if (value[0].isupper()):
                     self.ordered_consts.insert(idx, value)
-                    self.consts.add(value)
+                    self.consts[value] += 1
                 else:
                     self.ordered_vars.insert(idx, value)
-                    self.vars.add(value)
+                    self.vars[value] += 1

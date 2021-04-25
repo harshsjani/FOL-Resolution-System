@@ -11,8 +11,8 @@ class KB:
     def tell(self, sentence):
         sentence = Sentence(sentence)
         self.sentences.append(sentence)
-        self.vars |= sentence.get_vars()
-        self.consts |= sentence.get_consts()
+        # self.vars |= sentence.get_vars()
+        # self.consts |= sentence.get_consts()
 
     def ask(self, KB, query):
         return Logic.resolution(KB, query)

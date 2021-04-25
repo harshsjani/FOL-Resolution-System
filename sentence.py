@@ -7,9 +7,9 @@ class Sentence:
     def __init__(self, sentence):
         self.predicate_name_map = dict()
         self.ordered_predicates = []
-        self.vars = set()
+        self.vars = dict()
         self.ordered_vars = []
-        self.consts = set()
+        self.consts = dict()
         self.ordered_consts = []
 
         if isinstance(sentence, str):
@@ -25,8 +25,8 @@ class Sentence:
             pred = Predicate(sentence)
             self.predicate_name_map[pred.name] = pred
             self.ordered_predicates.append(pred)
-            self.vars |= pred.get_vars()
-            self.consts |= pred.get_consts()
+            # self.vars |= pred.get_vars()
+            # self.consts |= pred.get_consts()
         else:
             # Vaccinated(x) ^ Person(x) => Safe(x)
             # ~Vaccinated(x) v ~Person(x) v ~ Safe(x)
@@ -41,15 +41,15 @@ class Sentence:
                 pred = Predicate(predicate)
                 self.predicate_name_map[pred.name] = pred
                 self.ordered_predicates.append(pred)
-                self.vars |= pred.get_vars()
-                self.consts |= pred.get_consts()
+                # self.vars |= pred.get_vars()
+                # self.consts |= pred.get_consts()
 
     def __parse_pred_list__(self, pred_list):
         for pred in pred_list:
             self.predicate_name_map[pred.name] = pred
             self.ordered_predicates.append(pred)
-            self.vars |= pred.get_vars()
-            self.consts |= pred.get_consts()
+            # self.vars |= pred.get_vars()
+            # self.consts |= pred.get_consts()
 
     def __str__(self):
         return " | ".join(map(str, self.ordered_predicates))

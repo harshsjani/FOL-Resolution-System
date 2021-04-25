@@ -1,5 +1,6 @@
 from kb import KB
 from constants import Consts
+from collections import defaultdict
 
 
 class LogicRunner:
@@ -7,6 +8,29 @@ class LogicRunner:
         self.kb = KB()
         self.queries = []
         self.answers = []
+        self.var_counter = defaultdict(int)
+
+    def standardize_raw_sentence(self, raw_sentence):        
+        in_args = False
+        kb_ready_sent = []
+        updated_this_sent = set()
+
+        for i, char in enumerate(raw_sentence):
+            if char == "(":
+                in_args = True
+            elif char == ")":
+                in_args = False
+            else:
+                if in_args:
+                    if char.isalpha() and char.islower() and (raw_sentence[i + 1] == "," or raw_sentence[i + 1] == ")") and not raw_sentence[i - 1].isalpha():
+                        if char not in updated_this_sent:
+                            self.var_counter[char] += 1
+                            updated_this_sent.add(char)
+                        kb_ready_sent.append("{}{}".format(char, self.var_counter[char]))
+                        continue
+            kb_ready_sent.append(char)
+
+        return "".join(kb_ready_sent)
 
     def read_input_into_kb(self):
         with open(Consts.input_file_path) as ipf:
@@ -18,7 +42,9 @@ class LogicRunner:
             num_sentences = int(ipf.readline())
 
             for i in range(num_sentences):
-                self.kb.tell(ipf.readline().rstrip())
+                raw_sentence = ipf.readline().rstrip()
+                kb_ready_sentence = self.standardize_raw_sentence(raw_sentence)
+                self.kb.tell(kb_ready_sentence)
 
     def write_output(self):
         with open(Consts.output_file_path, "w") as opf:
