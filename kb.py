@@ -9,8 +9,6 @@ class KB:
 
     def tell(self, sentence):
         self.sentences.append(sentence)
-        # self.vars |= sentence.get_vars()
-        # self.consts |= sentence.get_consts()
 
     def ask(self, KB, query):
         return Logic.resolution(KB, query)
@@ -19,9 +17,3 @@ class KB:
         print("Sentences: {}\nConstants: {}\n Variables: {}".format(
             list(map(lambda x: x.raw_sentence, self.sentences)),
             self.consts, self.vars))
-
-    def eliminate_pure_literals(self):
-        pass
-
-    def factor_sentence(self, sentence):
-        pass

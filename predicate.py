@@ -28,11 +28,6 @@ class Predicate:
                 self.ordered_vars.append(arg)
             self.ordered_args.append(arg)
 
-    # def __eq__(self, other):
-    #     return self.name == other.name and self.negated == other.negated
-
-    # def __hash__(self):
-
     def __str__(self):
         ret = [Consts.NOT] if self.negated else []
         ret += [self.name]
@@ -71,3 +66,11 @@ class Predicate:
                 else:
                     self.ordered_vars.insert(idx, value)
                     self.vars[value] += 1
+
+    @staticmethod
+    def are_equal(pred1, pred2):
+        if pred1 ^ pred2:
+            return False
+        if pred1.name != pred2.name:
+            return False
+        return pred1.ordered_args == pred2.ordered_args
