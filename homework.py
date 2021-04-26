@@ -56,7 +56,7 @@ class LogicRunner:
 
     def run_logic(self):
         self.read_input_into_kb()
-        self.kb.eliminate_pure_literals() 
+        self.kb.eliminate_pure_literals()
 
         for query in self.queries:
             if self.kb.ask(self.kb, query):

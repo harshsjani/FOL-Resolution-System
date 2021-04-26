@@ -12,13 +12,18 @@ class Logic:
         drop_counter = defaultdict(list)
         for name, pred_list in sentence.predicate_name_map.items():
             if len(pred_list) > 1:
-                for pred1, pred2 in combinations(pred_list):
+                for pred1, pred2 in combinations(pred_list, 2):
                     if Predicate.are_equal(pred1, pred2):
-                        drop_counter[name].append(pred2)
-        for key, drop_list in drop_counter:
+                        if pred1 not in drop_counter[name]:
+                            drop_counter[name].append(pred1)
+                        elif pred2 not in drop_counter[name]:
+                            drop_counter[name].append(pred2)
+        for key, drop_list in drop_counter.items():
             lst = sentence.predicate_name_map[key]
 
             for item in drop_list:
+                if len(lst) == 1:
+                    break
                 lst.remove(item)
         new_preds = []
         for k, lst in sentence.predicate_name_map.items():
@@ -40,15 +45,15 @@ class Logic:
         if not can_factor:
             return
 
-        for pred1, pred2 in combinations(preds_to_factor):
+        for pred1, pred2 in combinations(preds_to_factor, 2):
             if pred1.negated ^ pred2.negated:
                 continue
             subs = Logic.unify(pred1, pred2)
 
             if subs is not None:
                 for pred in sentence.ordered_predicates:
-                    if pred != pred1 and pred != pred2:
-                        pred.subst(subs)
+                    pred.subst(subs)
+        Logic.merge_sentence(sentence)
 
     @staticmethod
     def is_variable(var):
@@ -149,8 +154,8 @@ class Logic:
                      for i in range(N - 1) for j in range(i + 1, N)]
 
             for s1, s2 in pairs:
-                if len(s1.ordered_predicates) > 1 and \
-                        len(s2.ordered_predicates) > 1:
+                if len(s1.ordered_predicates) > 15 and \
+                        len(s2.ordered_predicates) > 15:
                     continue
                 resolvents = Logic.resolve(s1, s2)
                 # for item in resolvents:

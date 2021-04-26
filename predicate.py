@@ -69,7 +69,7 @@ class Predicate:
 
     @staticmethod
     def are_equal(pred1, pred2):
-        if pred1 ^ pred2:
+        if pred1.negated ^ pred2.negated:
             return False
         if pred1.name != pred2.name:
             return False
