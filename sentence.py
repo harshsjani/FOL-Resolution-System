@@ -7,7 +7,7 @@ class Sentence:
     # Quite literally a bunch of predicates joined together by ORs
     def __init__(self, sentence):
         self.predicate_name_map = defaultdict(list)
-        self.ordered_predicates = []
+        self.ord_preds = []
 
         if isinstance(sentence, str):
             self.raw_sentence = sentence
@@ -22,7 +22,7 @@ class Sentence:
                 Consts.IMPLIES not in sentence:
             pred = Predicate(sentence)
             self.predicate_name_map[pred.name].append(pred)
-            self.ordered_predicates.append(pred)
+            self.ord_preds.append(pred)
         else:
             # Vaccinated(x) ^ Person(x) => Safe(x)
             # ~Vaccinated(x) v ~Person(x) v ~ Safe(x)
@@ -36,12 +36,12 @@ class Sentence:
                     predicate = Consts.NOT + predicate
                 pred = Predicate(predicate)
                 self.predicate_name_map[pred.name].append(pred)
-                self.ordered_predicates.append(pred)
+                self.ord_preds.append(pred)
 
     def __parse_pred_list__(self, pred_list):
         for pred in pred_list:
             self.predicate_name_map[pred.name].append(pred)
-            self.ordered_predicates.append(pred)
+            self.ord_preds.append(pred)
 
     def __str__(self):
-        return " | ".join(map(str, self.ordered_predicates))
+        return " | ".join(map(str, self.ord_preds))

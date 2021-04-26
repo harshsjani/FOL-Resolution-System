@@ -3,7 +3,7 @@ from sentence import Sentence
 
 
 def f(x):
-    return x.ordered_predicates[0].ordered_args
+    return x.ord_preds[0].ordered_args
 
 
 def test_merge():

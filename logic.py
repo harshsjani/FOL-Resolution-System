@@ -29,7 +29,7 @@ class Logic:
         for k, lst in sentence.predicate_name_map.items():
             new_preds.extend(lst)
         if new_preds:
-            sentence.ordered_predicates = new_preds
+            sentence.ord_preds = new_preds
 
     @staticmethod
     def factor_sentence(sentence):
@@ -51,9 +51,10 @@ class Logic:
             subs = Logic.unify(pred1, pred2)
 
             if subs is not None:
-                for pred in sentence.ordered_predicates:
+                for pred in sentence.ord_preds:
                     pred.subst(subs)
         Logic.merge_sentence(sentence)
+        sentence.ord_preds.sort(key=lambda x: x.name)
 
     @staticmethod
     def is_variable(var):
@@ -105,8 +106,8 @@ class Logic:
     def resolve(sentence1, sentence2):
         new_sentences = []
 
-        s1_preds = sentence1.ordered_predicates
-        s2_preds = sentence2.ordered_predicates
+        s1_preds = sentence1.ord_preds
+        s2_preds = sentence2.ord_preds
 
         # sentence 2 is always the single predicate sentence
         if len(s2_preds) > len(s1_preds):
@@ -126,8 +127,15 @@ class Logic:
 
                     new_sent = []
 
-                    for pred in sentence1.ordered_predicates:
+                    for pred in s1_preds:
                         if pred == pred1:
+                            continue
+                        new_pred = deepcopy(pred)
+                        new_pred.subst(substs)
+                        new_sent.append(new_pred)
+
+                    for pred in s2_preds:
+                        if pred == pred2:
                             continue
                         new_pred = deepcopy(pred)
                         new_pred.subst(substs)
@@ -154,16 +162,25 @@ class Logic:
                      for i in range(N - 1) for j in range(i + 1, N)]
 
             for s1, s2 in pairs:
-                if len(s1.ordered_predicates) > 15 and \
-                        len(s2.ordered_predicates) > 15:
+                if len(s1.ord_preds) > 15 and \
+                        len(s2.ord_preds) > 15:
                     continue
                 resolvents = Logic.resolve(s1, s2)
-                # for item in resolvents:
-                #     print(item)
 
                 if False in resolvents:
                     return True
-                new = new.union(set([str(r) for r in resolvents]))
+
+                usable_resolvents = []
+                for resolvent in resolvents:
+                    Logic.factor_sentence(resolvent)
+
+                    rlen = len(resolvent.ord_preds)
+                    if rlen <= len(s1.ord_preds) or rlen <= len(s2.ord_preds):
+                        usable_resolvents.append(resolvent)
+
+                for item in usable_resolvents:
+                    print(item)
+                new = new.union(set([str(r) for r in usable_resolvents]))
 
             if new.issubset(sentence_set):
                 return False
