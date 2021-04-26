@@ -74,3 +74,11 @@ class Predicate:
         if pred1.name != pred2.name:
             return False
         return pred1.ordered_args == pred2.ordered_args
+
+    @staticmethod
+    def are_tautology(pred1, pred2):
+        if not (pred1.negated ^ pred2.negated):
+            return False
+        if pred1.name != pred2.name:
+            return False
+        return pred1.ordered_args == pred2.ordered_args

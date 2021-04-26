@@ -2,6 +2,7 @@ from kb import KB
 from sentence import Sentence
 from constants import Consts
 from collections import defaultdict
+import time
 
 
 class LogicRunner:
@@ -57,11 +58,17 @@ class LogicRunner:
     def run_logic(self):
         self.read_input_into_kb()
 
+        start_time = time.time()
+
         for query in self.queries:
             if self.kb.ask(self.kb, query):
                 self.answers.append("TRUE")
             else:
                 self.answers.append("FALSE")
+
+        end_time = time.time()
+
+        print("Time taken: {}".format(end_time - start_time))
 
         self.write_output()
 

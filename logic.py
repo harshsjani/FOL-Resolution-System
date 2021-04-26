@@ -57,6 +57,24 @@ class Logic:
         sentence.ord_preds.sort(key=lambda x: x.name)
 
     @staticmethod
+    def is_tautology(sentence):
+        preds_to_check = []
+
+        for name, pred_list in sentence.predicate_name_map.items():
+            if len(pred_list) > 1:
+                preds_to_check.append(name)
+
+        if len(preds_to_check) == 0:
+            return False
+
+        for pred_name in preds_to_check:
+            for pred1, pred2 in combinations(
+                    sentence.predicate_name_map[pred_name], 2):
+                if Predicate.are_tautology(pred1, pred2):
+                    return True
+        return False
+
+    @staticmethod
     def is_variable(var):
         return isinstance(var, str) and var[0].islower()
 
@@ -108,10 +126,6 @@ class Logic:
 
         s1_preds = sentence1.ord_preds
         s2_preds = sentence2.ord_preds
-
-        # sentence 2 is always the single predicate sentence
-        if len(s2_preds) > len(s1_preds):
-            sentence1, sentence2 = sentence2, sentence1
 
         for pred1 in s1_preds:
             for pred2 in s2_preds:
@@ -174,12 +188,12 @@ class Logic:
                 for resolvent in resolvents:
                     Logic.factor_sentence(resolvent)
 
+                    if (Logic.is_tautology(resolvent)):
+                        continue
                     rlen = len(resolvent.ord_preds)
                     if rlen <= len(s1.ord_preds) or rlen <= len(s2.ord_preds):
                         usable_resolvents.append(resolvent)
 
-                for item in usable_resolvents:
-                    print(item)
                 new = new.union(set([str(r) for r in usable_resolvents]))
 
             if new.issubset(sentence_set):

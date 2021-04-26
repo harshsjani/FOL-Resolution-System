@@ -51,3 +51,17 @@ def test_factoring():
     sent1 = Sentence("~wise(x) | ~wise(y) | taller(x,y) | ~wise(p)")
     Logic.factor_sentence(sent1)
     assert(str(sent1)) == "~wise(p) | taller(p,p)"
+
+
+def test_taut():
+    sent1 = Sentence("P(x) | P(y)")
+    bool = Logic.is_tautology(sent1)
+    assert(bool) is False
+
+    sent1 = Sentence("P(x) | Q(y) | ~Q(y) | R(z)")
+    bool = Logic.is_tautology(sent1)
+    assert(bool) is True
+
+    sent1 = Sentence("~P(x) | P(y)")
+    bool = Logic.is_tautology(sent1)
+    assert(bool) is False
