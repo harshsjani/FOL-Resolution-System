@@ -63,7 +63,8 @@ class LogicRunner:
         start_time = time.time()
 
         for query in self.queries:
-            if self.kb.ask(self.kb, query):
+            copy_kb = deepcopy(self.kb)
+            if Logic.ask(copy_kb, query):
                 self.answers.append("TRUE")
             else:
                 self.answers.append("FALSE")

@@ -1,27 +1,17 @@
-from logic import Logic
-from copy import deepcopy
+from collections import defaultdict
 
 
 class KB:
     def __init__(self):
         self.sentences = []
+        self.pred_to_sentence = defaultdict(set)
         self.consts = set()
         self.vars = set()
 
     def tell(self, sentence):
         self.sentences.append(sentence)
-
-    def ask(self, KB, query):
-        ret = Logic.resolution(KB, query, False)
-
-        if ret is False:
-            kb2 = deepcopy(KB)
-            for sent in kb2.sentences:
-                Logic.factor_sentence(sent)
-            ret = Logic.resolution(kb2, query, True)
-        return ret
-        # return Logic.linear_resolution(KB, query)
-        # return Logic.sos_resolution(KB, query)
+        for pred_name in sentence.predicate_name_map:
+            self.pred_to_sentence[pred_name].add(sentence)
 
     def _debug_print_kb(self):
         print("Sentences: {}\nConstants: {}\n Variables: {}".format(

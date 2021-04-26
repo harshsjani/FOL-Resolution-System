@@ -4,12 +4,15 @@ from collections import defaultdict
 
 class Predicate:
     def __init__(self, literal):
-        self.negated = literal.count(Consts.NOT) % 2 != 0
-        literal = literal.replace(Consts.NOT, "").strip()
+        self.negated = literal.count(Consts.NOT) == 1
+        literal = literal.strip()
+
+        if self.negated:
+            literal = literal[1:]
         lb_idx = literal.index(Consts.left_bracket)
         rb_idx = literal.index(Consts.right_bracket)
 
-        self.name = literal[:lb_idx]
+        self.name = literal[:lb_idx].strip()
         args = literal[lb_idx + 1: rb_idx].split(Consts.args_sep)
 
         self.consts = defaultdict(int)
@@ -29,7 +32,7 @@ class Predicate:
             self.ordered_args.append(arg)
 
     def __str__(self):
-        ret = [Consts.NOT] if self.negated else []
+        ret = []
         ret += [self.name]
         ret += ["("]
         for x in self.ordered_args:

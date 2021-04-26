@@ -1,6 +1,6 @@
 1
 R(Bob)
-16
+15
 C(x) & D(x) & E(x) => One(x)
 C(x) & D(x) & ~E(x) => Two(x)
 C(x) & ~D(x) & E(x) => Three(x)

@@ -27,6 +27,8 @@ def run_grade():
     print("Passed: {}/{}".format(passed, num_tests))
     if failed:
         print("Failed #s:\n{}".format(failed))
+        return failed
+    return []
 
 
 def run_tests():
@@ -56,6 +58,8 @@ def run_tests():
     print("Passed: {}/{}".format(passed, num_tests))
     if failed:
         print("Failed #s:\n{}".format(failed))
+        return failed
+    return []
 
 
 def run_testcase():
@@ -80,15 +84,22 @@ def run_testcase():
     print("Passed: {}/{}".format(passed, num_tests))
     if failed:
         print("Failed #s:\n{}".format(failed))
+        return failed
+    return []
 
 
 def run_test_cats(cats):
+    ret = []
     if 1 in cats:
-        run_tests()
+        ret.append(run_tests())
     if 2 in cats:
-        run_grade()
+        ret.append(run_grade())
     if 3 in cats:
-        run_testcase()
+        ret.append(run_testcase())
+    return ret
 
 
-run_test_cats([3])
+ret = run_test_cats([1, 2, 3])
+
+if ret:
+    print("Failed cases:\n" + str(ret))

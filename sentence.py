@@ -18,22 +18,23 @@ class Sentence:
     def __parse_str_sentence__(self):
         sentence = self.raw_sentence
 
-        if Consts.AND not in sentence and Consts.OR not in sentence and \
-                Consts.IMPLIES not in sentence:
+        if Consts.AND not in sentence and Consts.IMPLIES not in sentence:
             pred = Predicate(sentence)
             self.predicate_name_map[pred.name].append(pred)
             self.ord_preds.append(pred)
         else:
-            # Vaccinated(x) ^ Person(x) => Safe(x)
-            # ~Vaccinated(x) v ~Person(x) v ~ Safe(x)
-            sentence = sentence.replace(Consts.IMPLIES, Consts.IMPLIES_REPL)
+            sentence = sentence.replace(Consts.IMPLIES, Consts.AND)
 
-            splitter = Consts.AND if Consts.AND in sentence else Consts.OR
+            splitter = Consts.AND
+            splt = sentence.split(splitter)
 
-            for predicate in sentence.split(splitter):
-                # ~Vaccinated(x)
-                if splitter == Consts.AND:
-                    predicate = Consts.NOT + predicate
+            for idx, predicate in enumerate(splt):
+                predicate = predicate.strip()
+                if idx != len(splt) - 1:
+                    if predicate[0] != Consts.NOT:
+                        predicate = Consts.NOT + predicate.strip()
+                    else:
+                        predicate = predicate[1:]
                 pred = Predicate(predicate)
                 self.predicate_name_map[pred.name].append(pred)
                 self.ord_preds.append(pred)
@@ -51,3 +52,6 @@ class Sentence:
 
     def __hash__(self):
         return hash(self.__str__())
+
+    def __len__(self):
+        return len(self.ord_preds)
