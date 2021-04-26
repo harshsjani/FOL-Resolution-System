@@ -20,7 +20,7 @@ def test_merge():
     sent1 = Sentence("P(x) | P(x) | ~P(y) | ~P(y) | T(x) | ~P(y) | \
                     T(x) | ~T(x) | P(y) | P(Bob)")
     Logic.merge_sentence(sent1)
-    print(sent1)
+    assert(str(sent1)) == "P(x) | ~P(y) | T(x) | ~T(x) | P(Bob)"
 
 
 def test_factoring():
