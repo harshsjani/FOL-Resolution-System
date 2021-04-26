@@ -54,7 +54,7 @@ def test_factoring():
 
     sent1 = Sentence("Parent(x,p) & Parent(x,w) & Parent(a,b) & Parent(c,d) => Sibling(p,w)")
     Logic.factor_sentence(sent1)
-    assert(str(sent1)) == "~wise(p) | taller(p,p)"
+    assert(str(sent1)) == "~Parent(c,d) | Sibling(d,d)"
 
 
 def test_taut():

@@ -70,7 +70,7 @@ def run_testcase():
             my_output = ipfile.read()
         theirs = ''
         with open('tests/testcase/output' + str(i) + '.txt') as ipfile:
-            theirs = ipfile.read()
+            theirs = ipfile.read().rstrip("\n")
 
         if my_output == theirs:
             passed += 1
@@ -91,4 +91,4 @@ def run_test_cats(cats):
         run_testcase()
 
 
-run_test_cats([1, 2, 3])
+run_test_cats([3])

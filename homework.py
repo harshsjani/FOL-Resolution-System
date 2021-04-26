@@ -51,10 +51,7 @@ class LogicRunner:
                 raw_sentence = ipf.readline().rstrip()
                 kb_sentence = self.standardize_raw_sentence(raw_sentence)
                 kb_sentence = Sentence(kb_sentence)
-                original_sent = deepcopy(kb_sentence)
-                Logic.factor_sentence(kb_sentence)
-                # self.kb.tell(kb_sentence)
-                self.kb.tell(original_sent)
+                self.kb.tell(kb_sentence)
 
     def write_output(self):
         with open(Consts.output_file_path, "w") as opf:
