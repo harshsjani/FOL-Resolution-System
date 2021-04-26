@@ -166,14 +166,17 @@ class Logic:
     def resolution(KB, alpha):
         sentences = deepcopy(KB.sentences) + [Sentence(Consts.NOT + alpha)]
 
-        sentence_set = set([str(x) for x in sentences])
-        new = set()
+        sentence_set = set(sentences)
+        prev_set = set(sentences)
 
         while True:
-            N = len(sentences)
+            pairs = []
+            new = set()
 
-            pairs = [(sentences[i], sentences[j])
-                     for i in range(N - 1) for j in range(i + 1, N)]
+            for sent1 in sentence_set:
+                for sent2 in prev_set:
+                    if sent1 != sent2:
+                        pairs.append((sent1, sent2))
 
             for s1, s2 in pairs:
                 if len(s1.ord_preds) > 15 and \
@@ -194,12 +197,10 @@ class Logic:
                     if rlen <= len(s1.ord_preds) or rlen <= len(s2.ord_preds):
                         usable_resolvents.append(resolvent)
 
-                new = new.union(set([str(r) for r in usable_resolvents]))
+                new = new.union(set(usable_resolvents))
 
             if new.issubset(sentence_set):
                 return False
 
-            for new_sentence in new:
-                if new_sentence not in sentence_set:
-                    sentences.append(Sentence(new_sentence))
-                    sentence_set.add(new_sentence)
+            prev_set = new
+            sentence_set.update(new)

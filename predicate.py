@@ -52,20 +52,26 @@ class Predicate:
             return
         # None or mapping {x: Dan, y: Bella}
         # {x: y, z: Shawn}
-        for var, value in subst_list.items():
-            while self.vars[var] > 0:
-                self.vars[var] -= 1
-                idx = self.ordered_args.index(var)
-                self.ordered_vars.remove(var)
-                self.ordered_args.remove(var)
-                self.ordered_args.insert(idx, value)
+        seen = set()
 
-                if (value[0].isupper()):
-                    self.ordered_consts.insert(idx, value)
-                    self.consts[value] += 1
-                else:
-                    self.ordered_vars.insert(idx, value)
-                    self.vars[value] += 1
+        while True:
+            for var, value in subst_list.items():
+                while self.vars[var] > 0:
+                    self.vars[var] -= 1
+                    idx = self.ordered_args.index(var)
+                    self.ordered_vars.remove(var)
+                    self.ordered_args.remove(var)
+                    self.ordered_args.insert(idx, value)
+
+                    if (value[0].isupper()):
+                        self.ordered_consts.insert(idx, value)
+                        self.consts[value] += 1
+                    else:
+                        self.ordered_vars.insert(idx, value)
+                        self.vars[value] += 1
+            if self.__str__() in seen:
+                return
+            seen.add(self.__str__())
 
     @staticmethod
     def are_equal(pred1, pred2):

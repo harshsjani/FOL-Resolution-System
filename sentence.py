@@ -45,3 +45,9 @@ class Sentence:
 
     def __str__(self):
         return " | ".join(map(str, self.ord_preds))
+
+    def __eq__(self, other):
+        return self.__str__() == str(other)
+
+    def __hash__(self):
+        return hash(self.__str__())
