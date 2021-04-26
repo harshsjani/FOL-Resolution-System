@@ -1,7 +1,9 @@
 from kb import KB
+from logic import Logic
 from sentence import Sentence
 from constants import Consts
 from collections import defaultdict
+from copy import deepcopy
 import time
 
 
@@ -49,7 +51,10 @@ class LogicRunner:
                 raw_sentence = ipf.readline().rstrip()
                 kb_sentence = self.standardize_raw_sentence(raw_sentence)
                 kb_sentence = Sentence(kb_sentence)
-                self.kb.tell(kb_sentence)
+                original_sent = deepcopy(kb_sentence)
+                Logic.factor_sentence(kb_sentence)
+                # self.kb.tell(kb_sentence)
+                self.kb.tell(original_sent)
 
     def write_output(self):
         with open(Consts.output_file_path, "w") as opf:

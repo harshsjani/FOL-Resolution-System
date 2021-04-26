@@ -50,6 +50,10 @@ def test_factoring():
 
     sent1 = Sentence("~wise(x) | ~wise(y) | taller(x,y) | ~wise(p)")
     Logic.factor_sentence(sent1)
+    assert(str(sent1)) == "taller(p,p) | ~wise(p)"
+
+    sent1 = Sentence("Parent(x,p) & Parent(x,w) & Parent(a,b) & Parent(c,d) => Sibling(p,w)")
+    Logic.factor_sentence(sent1)
     assert(str(sent1)) == "~wise(p) | taller(p,p)"
 
 

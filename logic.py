@@ -75,6 +75,19 @@ class Logic:
         return False
 
     @staticmethod
+    def subsume(sentence_set):
+        to_discard = []
+
+        for s1, s2 in combinations(sentence_set, 2):
+            if len(s1.ord_preds) > 1 and len(s2.ord_preds) > 1:
+                continue
+
+            if len(s1.ord_preds) > len(s2.ord_preds):
+                s1, s2 = s2, s1
+            
+            subs_list = Logic.unify(s1, s2)
+
+    @staticmethod
     def is_variable(var):
         return isinstance(var, str) and var[0].islower()
 
@@ -163,7 +176,7 @@ class Logic:
         return new_sentences
 
     @staticmethod
-    def resolution(KB, alpha):
+    def resolution(KB, alpha, factoring=True):
         sentences = deepcopy(KB.sentences) + [Sentence(Consts.NOT + alpha)]
 
         sentence_set = set(sentences)
@@ -173,14 +186,16 @@ class Logic:
             pairs = []
             new = set()
 
+            Logic.subsume(sentence_set)
+
             for sent1 in sentence_set:
                 for sent2 in prev_set:
                     if sent1 != sent2:
                         pairs.append((sent1, sent2))
 
             for s1, s2 in pairs:
-                if len(s1.ord_preds) > 15 and \
-                        len(s2.ord_preds) > 15:
+                if len(s1.ord_preds) > 1 and \
+                        len(s2.ord_preds) > 1:
                     continue
                 resolvents = Logic.resolve(s1, s2)
 
@@ -189,7 +204,8 @@ class Logic:
 
                 usable_resolvents = []
                 for resolvent in resolvents:
-                    Logic.factor_sentence(resolvent)
+                    if factoring:
+                        Logic.factor_sentence(resolvent)
 
                     if (Logic.is_tautology(resolvent)):
                         continue
@@ -204,3 +220,105 @@ class Logic:
 
             prev_set = new
             sentence_set.update(new)
+
+    @staticmethod
+    def linear_resolution(KB, query):
+        sentences = deepcopy(KB.sentences) + [Sentence(Consts.NOT + query)]
+        sentence_set = set(sentences)
+        global_visited = set(sentences)
+
+        return Logic.linear_res_rec(
+            sentence_set, global_visited, sentences[-1])
+
+    @staticmethod
+    def linear_res_rec(ancestor_set, global_visited, res_sent):
+        for sentence in ancestor_set:
+            resolvents = Logic.resolve(sentence, res_sent)
+
+            if False in resolvents:
+                return True
+
+            for resolvent in resolvents:
+                Logic.factor_sentence(resolvent)
+
+                if (Logic.is_tautology(resolvent)):
+                    continue
+
+                rlen = len(resolvent.ord_preds)
+                if not(rlen <= len(sentence.ord_preds) or
+                        rlen <= len(res_sent.ord_preds)):
+                    continue
+
+                if resolvent in global_visited:
+                    continue
+                global_visited.add(resolvent)
+
+                ret = Logic.linear_res_rec(
+                    ancestor_set | {res_sent}, global_visited, resolvent)
+                if ret:
+                    return True
+        return False
+
+    @staticmethod
+    def sos_resolution(KB, query):
+        query_sent = Sentence(Consts.NOT + query)
+        sos = {query_sent}
+        aux = set(deepcopy(KB.sentences))
+
+        while True:
+            temp_set = set()
+            for s1, s2 in combinations(sos, 2):
+                resolvents = Logic.resolve(s1, s2)
+
+                if False in resolvents:
+                    return True
+
+                for resolvent in resolvents:
+                    Logic.factor_sentence(resolvent)
+
+                    if (Logic.is_tautology(resolvent)):
+                        continue
+
+                    usable_resolvents = []
+                    for resolvent in resolvents:
+                        Logic.factor_sentence(resolvent)
+
+                        if (Logic.is_tautology(resolvent)):
+                            continue
+                        rlen = len(resolvent.ord_preds)
+                        if rlen <= len(s1.ord_preds) or \
+                                rlen <= len(s2.ord_preds):
+                            usable_resolvents.append(resolvent)
+
+                    temp_set.update(set(usable_resolvents))
+
+            for s1 in sos:
+                for s2 in aux:
+                    resolvents = Logic.resolve(s1, s2)
+
+                    if False in resolvents:
+                        return True
+
+                    for resolvent in resolvents:
+                        Logic.factor_sentence(resolvent)
+
+                        if (Logic.is_tautology(resolvent)):
+                            continue
+
+                        usable_resolvents = []
+                        for resolvent in resolvents:
+                            Logic.factor_sentence(resolvent)
+
+                            if (Logic.is_tautology(resolvent)):
+                                continue
+                            rlen = len(resolvent.ord_preds)
+                            if rlen <= len(s1.ord_preds) or \
+                                    rlen <= len(s2.ord_preds):
+                                usable_resolvents.append(resolvent)
+
+                        temp_set.update(set(usable_resolvents))
+
+            if temp_set.issubset(sos):
+                return False
+
+            sos.update(temp_set)
