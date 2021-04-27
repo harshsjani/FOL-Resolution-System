@@ -1,5 +1,6 @@
 import subprocess
 import shutil
+import time
 
 
 test_cats = ["./tests", "./tests/grade", "./tests/testcase"]
@@ -99,7 +100,11 @@ def run_test_cats(cats):
     return ret
 
 
+start_time = time.time()
 ret = run_test_cats([1, 2, 3])
 
 if ret:
     print("Failed cases:\n" + str(ret))
+end_time = time.time()
+print("Total time taken to run all test cases:\n{} seconds".format(
+    end_time - start_time))

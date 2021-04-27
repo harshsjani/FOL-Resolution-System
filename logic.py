@@ -3,7 +3,7 @@ from collections import defaultdict
 from sentence import Sentence
 from predicate import Predicate
 from constants import Consts
-from itertools import combinations, product
+from itertools import combinations
 
 
 class Logic:
@@ -224,7 +224,7 @@ class Logic:
             sentence_set.update(new)
 
     @staticmethod
-    def sos_resolve(s1, s2, temp_set, unit=False):
+    def sos_resolve(s1, s2, temp_set, sos_map, unit=False):
         if unit:
             if len(s1) > 1 and len(s2) > 1:
                 return
@@ -236,8 +236,6 @@ class Logic:
 
         for resolvent in resolvents:
             if not unit and len(resolvent) <= 3:
-                # Logic.merge_sentence(resolvent)
-                # Logic.sort_sentence(resolvent)
                 Logic.factor_sentence(resolvent)
             else:
                 Logic.merge_sentence(resolvent)
@@ -255,11 +253,25 @@ class Logic:
 
             temp_set.update(set(usable_resolvents))
 
+            for sentence in usable_resolvents:
+                for pred in sentence.ord_preds:
+                    sos_map[pred.name][pred.negated].add(sentence)
+
+    @staticmethod
+    def gen_pairs(map1, map2):
+        pairs = []
+        for s1 in map1:
+            s2s = set()
+            for pred in s1.ord_preds:
+                s2s |= map2[pred.name][not pred.negated]
+            for s2 in s2s:
+                pairs.append((s1, s2))
+        return pairs
+
     @staticmethod
     def sos_resolution(KB, query, unit_only=False):
         query = query[1:] if query[0] == Consts.NOT else Consts.NOT + query
         query_sent = Sentence(query)
-        # pred_sent_map = KB.pred_to_sentence
         prev_sos = [set([query_sent])]
         sos = prev_sos[-1]
         aux = set(KB.sentences)
@@ -267,41 +279,63 @@ class Logic:
         vis.update(sos)
         vis.update(aux)
 
+        sos_map = defaultdict(lambda: defaultdict(set))
+        aux_map = defaultdict(lambda: defaultdict(set))
+
+        loop_ctr = 0
+
+        for sentence in KB.sentences:
+            for pred in sentence.ord_preds:
+                aux_map[pred.name][pred.negated].add(sentence)
+
+        for pred in query_sent.ord_preds:
+            sos_map[pred.name][pred.negated].add(query_sent)
+
         while True:
             temp_set = set()
             sos = prev_sos[-1]
-            for s1, s2 in combinations(sos, 2):
-                ret = Logic.sos_resolve(s1, s2, temp_set, unit=True)
+            for s1, s2 in Logic.gen_pairs(sos, sos_map):
+                ret = Logic.sos_resolve(s1, s2, temp_set, sos_map, unit=True)
 
                 if ret is True:
                     return True
-            for s1, s2 in product(sos, aux, repeat=1):
-                ret = Logic.sos_resolve(s1, s2, temp_set, unit=True)
 
-                if ret is True:
-                    return True
+            if loop_ctr == 0:
+                for s1, s2 in Logic.gen_pairs(sos, aux_map):
+                    ret = Logic.sos_resolve(s1, s2, temp_set, sos_map, unit=True)
+
+                    if ret is True:
+                        return True
 
             if not temp_set.issubset(sos):
                 sos.update(temp_set)
                 continue
 
             if not unit_only:
-                for s1, s2 in combinations(sos, 2):
-                    ret = Logic.sos_resolve(s1, s2, temp_set, unit=False)
+                for s1, s2 in Logic.gen_pairs(sos, sos_map):
+                    ret = Logic.sos_resolve(s1, s2, temp_set, sos_map)
 
                     if ret is True:
                         return True
-                for s1, s2 in product(sos, aux, repeat=1):
-                    ret = Logic.sos_resolve(s1, s2, temp_set, unit=False)
+                
+                if loop_ctr == 0:
+                    for s1, s2 in Logic.gen_pairs(sos, aux_map):
+                        ret = Logic.sos_resolve(s1, s2, temp_set, sos_map)
 
-                    if ret is True:
-                        return True
+                        if ret is True:
+                            return True
 
             if temp_set.issubset(vis):
                 return False
 
             vis.update(temp_set)
             prev_sos.append(temp_set)
+            sos_map = defaultdict(lambda: defaultdict(set))
+            for sentence in temp_set:
+                for pred in sentence.ord_preds:
+                    sos_map[pred.name][pred.negated].add(sentence)
+
+            loop_ctr += 1
             # for x in sos:
             #     print(x)
             # for x in aux:
