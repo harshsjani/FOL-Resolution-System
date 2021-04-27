@@ -32,7 +32,7 @@ class Predicate:
             self.ordered_args.append(arg)
 
     def __str__(self):
-        ret = []
+        ret = [Consts.NOT] if self.negated else []
         ret += [self.name]
         ret += ["("]
         for x in self.ordered_args:

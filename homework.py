@@ -51,6 +51,7 @@ class LogicRunner:
                 raw_sentence = ipf.readline().rstrip()
                 kb_sentence = self.standardize_raw_sentence(raw_sentence)
                 kb_sentence = Sentence(kb_sentence)
+                Logic.sort_sentence(kb_sentence)
                 self.kb.tell(kb_sentence)
 
     def write_output(self):

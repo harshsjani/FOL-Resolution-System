@@ -15,7 +15,12 @@ class Logic:
 
     @staticmethod
     def ask(KB, query):
-        return Logic.sos_resolution(KB, query)
+        ret = Logic.resolution(KB, query, False)
+        if not ret:
+            # ret = Logic.sos_resolution(KB, query, unit_only=True)
+            # if not ret:
+            ret = Logic.sos_resolution(KB, query, unit_only=False)
+        return ret
 
     @staticmethod
     def merge_sentence(sentence):
@@ -64,6 +69,10 @@ class Logic:
                 for pred in sentence.ord_preds:
                     pred.subst(subs)
         Logic.merge_sentence(sentence)
+        Logic.sort_sentence(sentence)
+
+    @staticmethod
+    def sort_sentence(sentence):
         sentence.ord_preds.sort(key=lambda x: x.name)
 
     @staticmethod
@@ -226,7 +235,13 @@ class Logic:
             return True
 
         for resolvent in resolvents:
-            Logic.factor_sentence(resolvent)
+            if not unit and len(resolvent) <= 3:
+                # Logic.merge_sentence(resolvent)
+                # Logic.sort_sentence(resolvent)
+                Logic.factor_sentence(resolvent)
+            else:
+                Logic.merge_sentence(resolvent)
+                Logic.sort_sentence(resolvent)
 
             if (Logic.is_tautology(resolvent)):
                 continue
@@ -241,15 +256,20 @@ class Logic:
             temp_set.update(set(usable_resolvents))
 
     @staticmethod
-    def sos_resolution(KB, query):
+    def sos_resolution(KB, query, unit_only=False):
         query = query[1:] if query[0] == Consts.NOT else Consts.NOT + query
         query_sent = Sentence(query)
-        sos = {query_sent}
         # pred_sent_map = KB.pred_to_sentence
+        prev_sos = [set([query_sent])]
+        sos = prev_sos[-1]
         aux = set(KB.sentences)
+        vis = set()
+        vis.update(sos)
+        vis.update(aux)
 
         while True:
             temp_set = set()
+            sos = prev_sos[-1]
             for s1, s2 in combinations(sos, 2):
                 ret = Logic.sos_resolve(s1, s2, temp_set, unit=True)
 
@@ -265,24 +285,31 @@ class Logic:
                 sos.update(temp_set)
                 continue
 
-            for s1, s2 in combinations(sos, 2):
-                ret = Logic.sos_resolve(s1, s2, temp_set, unit=False)
+            if not unit_only:
+                for s1, s2 in combinations(sos, 2):
+                    ret = Logic.sos_resolve(s1, s2, temp_set, unit=False)
 
-                if ret is True:
-                    return True
-            for s1, s2 in product(sos, aux, repeat=1):
-                ret = Logic.sos_resolve(s1, s2, temp_set, unit=False)
+                    if ret is True:
+                        return True
+                for s1, s2 in product(sos, aux, repeat=1):
+                    ret = Logic.sos_resolve(s1, s2, temp_set, unit=False)
 
-                if ret is True:
-                    return True
+                    if ret is True:
+                        return True
 
-            # if temp_set.issubset(sos):
-            #     for x in sos:
-            #         print(x)
-            #     for x in aux:
-            #         print(x)
-            #     for x in temp_set:
-            #         print(x)
-            #     return False
+            if temp_set.issubset(vis):
+                return False
 
-            sos.update(temp_set)
+            vis.update(temp_set)
+            prev_sos.append(temp_set)
+            # for x in sos:
+            #     print(x)
+            # for x in aux:
+            #     print(x)
+            # for x in temp_set:
+            #     print(x)
+            # for x in sos:
+            #     print(x)
+            # print(len(temp_set))
+            if len(temp_set) > 1000:
+                return False

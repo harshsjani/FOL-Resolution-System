@@ -1,5 +1,12 @@
 1
-Take(Alice,NSAIDs)
-2
-Take(x,Warfarin) => ~Take(x,NSAIDs)
-Take(Alice,Warfarin)
+Ancestor(Liz,Billy)
+9
+Parent(x,y) & Ancestor(y,z) => Ancestor(x,z)
+Parent(x,y) => Ancestor(x,y)
+Mother(x,y) => Parent(x,y)
+Father(x,y) => Parent(x,y)
+Mother(Liz,Charley)
+Mother(Charley,Sam)
+Mother(Sam,Bob)
+Mother(Bob,Lilli)
+Father(Lilli,Billy)

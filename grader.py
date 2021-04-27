@@ -32,7 +32,7 @@ def run_grade():
 
 
 def run_tests():
-    num_tests = 22
+    num_tests = 21
     passed = 0
     failed = []
     for i in range(1, num_tests + 1):
